@@ -39,6 +39,9 @@ class ContextBase(oslo_context.RequestContext):
         # prefer project_name, as that's what's going to be set by
         # keystone. Fall back to tenant_name if for some reason it's blank.
         kwargs.setdefault('project_name', tenant_name)
+        self._os_id = kwargs.pop('os_id', '')
+        self._az_id = kwargs.pop('az_id', '')
+
         super(ContextBase, self).__init__(is_admin=is_admin, **kwargs)
 
         self.user_name = user_name
@@ -51,6 +54,24 @@ class ContextBase(oslo_context.RequestContext):
             self.is_advsvc = self.is_admin or policy.check_is_advsvc(self)
         if self.is_admin is None:
             self.is_admin = policy.check_is_admin(self)
+
+
+
+    @property
+    def os_id(self):
+        return self._os_id
+
+    @os_id.setter
+    def os_id(self, os_id):
+        self._os_id = os_id
+
+    @property
+    def az_id(self):
+        return self._az_id
+
+    @az_id.setter
+    def az_id(self, az_id):
+        self._az_id = az_id
 
     @property
     def project_id(self):
